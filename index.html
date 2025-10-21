@@ -1,150 +1,198 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Suite Ejecutiva Digital - Propuesta Estratégica</title>
-<style>
-:root {
-  --primary-color: #0A2F7B;
-  --secondary-color: #00B6C8;
-  --text-color: #FFFFFF;
-}
-body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: #000;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  color: var(--text-color);
-}
-.scene {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 1.8s ease-in-out;
-}
-.scene.active {
-  opacity: 1;
-  z-index: 2;
-}
-.scene-video {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%; height: 100%;
-  object-fit: cover;
-  background-color: #000;
-  z-index: -2;
-}
-.scene-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.35));
-  z-index: -1;
-}
-.scene-content {
-  position: relative;
-  z-index: 1;
-  opacity: 0;
-  transform: translateY(25px);
-  transition: opacity 1.4s ease-out, transform 1.4s ease-out;
-  padding: 2rem;
-  box-sizing: border-box;
-}
-.scene.active .scene-content.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.scene h1 {
-  font-size: 3.8vw;
-  margin-bottom: 1.5vw;
-  font-weight: 700;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-}
-.scene p {
-  font-size: 1.9vw;
-  max-width: 55%;
-  line-height: 1.6;
-  font-weight: 300;
-  text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
-  text-align: justify;
-  margin: 0 auto;
-}
-#form-container {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 100;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(10px);
-}
-.form-content { width: 90%; max-width: 800px; }
-.question-card {
-  background-color: #2c2c2c;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  display: none;
-}
-.question-card.active { display: block; animation: fadeIn 0.5s forwards; }
-@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-#progress-bar-container {
-  width: 100%;
-  background-color: #444;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-bottom: 30px;
-}
-#progress-bar {
-  width: 0%; height: 10px;
-  background-color: var(--secondary-color);
-  transition: width 0.4s ease-out;
-}
-.answers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-.answer-btn {
-  background-color: #3e3e3e;
-  color: var(--text-color);
-  border: 1px solid #555;
-  padding: 15px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s, transform 0.2s;
-}
-.answer-btn:hover {
-  background-color: var(--secondary-color);
-  transform: translateY(-3px);
-}
-@media (max-width: 768px) {
-  .scene h1 { font-size: 6vw; }
-  .scene p { font-size: 3.5vw; max-width: 90%; }
-  .answers { grid-template-columns: 1fr; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suite Ejecutiva Digital - Propuesta Estratégica</title>
+
+  <!-- ✅ FAVICONES E ÍCONOS -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#0A2F7B" />
+
+  <!-- ✅ METADATOS GENERALES -->
+  <meta name="description" content="Transforme su marca y estrategia digital con la Suite Ejecutiva Digital.">
+  <meta name="keywords" content="Suite Ejecutiva Digital, marketing, estrategia, transformación digital, marca, branding, SRM, QK">
+  <meta name="author" content="Somos Repuestos Motos - Coder">
+
+  <!-- ✅ OPEN GRAPH (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:title" content="Suite Ejecutiva Digital - Propuesta Estratégica">
+  <meta property="og:description" content="Descubra cómo transformar su marca con una estrategia digital completa.">
+  <meta property="og:image" content="https://somosrepuestosmotos-coder.github.io/QK/android-chrome-512x512.png">
+  <meta property="og:url" content="https://somosrepuestosmotos-coder.github.io/QK/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_ES">
+
+  <!-- ✅ TWITTER CARDS -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Suite Ejecutiva Digital - Propuesta Estratégica">
+  <meta name="twitter:description" content="Descubra cómo transformar su marca con una estrategia digital completa.">
+  <meta name="twitter:image" content="https://somosrepuestosmotos-coder.github.io/QK/android-chrome-512x512.png">
+
+  <style>
+    :root {
+      --primary-color: #0A2F7B;
+      --secondary-color: #00B6C8;
+      --text-color: #FFFFFF;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text-color);
+    }
+
+    /* === Escenas === */
+    .scene {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1.8s ease-in-out;
+    }
+
+    .scene.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    /* === Videos === */
+    .scene-video {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%; height: 100%;
+      object-fit: cover;
+      background-color: #000;
+      z-index: -2;
+    }
+
+    /* === Overlay con degradado dinámico === */
+    .scene-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.35));
+      z-index: -1;
+    }
+
+    /* === Texto === */
+    .scene-content {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity 1.4s ease-out, transform 1.4s ease-out;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+
+    .scene.active .scene-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .scene h1 {
+      font-size: 3.8vw;
+      margin-bottom: 1.5vw;
+      font-weight: 700;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+      letter-spacing: 0.03em;
+    }
+
+    .scene p {
+      font-size: 1.9vw;
+      max-width: 55%;
+      line-height: 1.6;
+      font-weight: 300;
+      text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+      text-align: justify;
+      text-justify: inter-word;
+      margin: 0 auto;
+    }
+
+    /* === Formulario === */
+    #form-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-content { width: 90%; max-width: 800px; }
+    .question-card {
+      background-color: #2c2c2c;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .question-card.active { display: block; animation: fadeIn 0.5s forwards; }
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+    #progress-bar-container {
+      width: 100%;
+      background-color: #444;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    #progress-bar {
+      width: 0%; height: 10px;
+      background-color: var(--secondary-color);
+      transition: width 0.4s ease-out;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .answer-btn {
+      background-color: #3e3e3e;
+      color: var(--text-color);
+      border: 1px solid #555;
+      padding: 15px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .answer-btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-3px);
+    }
+    @media (max-width: 768px) {
+      .scene h1 { font-size: 6vw; }
+      .scene p { font-size: 3.5vw; max-width: 90%; }
+      .answers { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
 <main id="presentation-container">
   <div class="scene active" id="scene-1">
     <div class="scene-overlay"></div>
-    <video class="scene-video" autoplay muted playsinline preload="auto">
+    <video class="scene-video" autoplay muted playsinline preload="auto" crossorigin="anonymous">
       <source src="https://srm-backend-qk-lwid.onrender.com/videos/animacion-logo-qk-original.mp4" type="video/mp4">
     </video>
     <div class="scene-content"><h1>Comenzamos por entender el corazón de su negocio.</h1>
@@ -153,7 +201,7 @@ body, html {
 
   <div class="scene" id="scene-2">
     <div class="scene-overlay"></div>
-    <video class="scene-video" autoplay muted playsinline preload="auto">
+    <video class="scene-video" autoplay muted playsinline preload="auto" crossorigin="anonymous">
       <source src="https://srm-backend-qk-lwid.onrender.com/videos/animacion-insight-mercado.mp4" type="video/mp4">
     </video>
     <div class="scene-content"><h1>Pero descubrimos una oportunidad que sus competidores no ven.</h1>
@@ -162,7 +210,7 @@ body, html {
 
   <div class="scene" id="scene-3">
     <div class="scene-overlay"></div>
-    <video class="scene-video" autoplay muted playsinline preload="auto">
+    <video class="scene-video" autoplay muted playsinline preload="auto" crossorigin="anonymous">
       <source src="https://srm-backend-qk-lwid.onrender.com/videos/animacion-nuevo-logo-3d.mp4" type="video/mp4">
     </video>
     <div class="scene-content"><h1>Visualizamos su marca, no como es, sino como debería ser.</h1>
@@ -171,7 +219,7 @@ body, html {
 
   <div class="scene" id="scene-4">
     <div class="scene-overlay"></div>
-    <video class="scene-video" autoplay muted playsinline preload="auto">
+    <video class="scene-video" autoplay muted playsinline preload="auto" crossorigin="anonymous">
       <source src="https://srm-backend-qk-lwid.onrender.com/videos/animacion-papeleria-merchandising-packaging.mp4" type="video/mp4">
     </video>
     <div class="scene-content"><h1>Una marca que cobra vida en el mundo real.</h1>
@@ -180,7 +228,7 @@ body, html {
 
   <div class="scene" id="scene-5">
     <div class="scene-overlay"></div>
-    <video class="scene-video" autoplay muted playsinline preload="auto">
+    <video class="scene-video" autoplay muted playsinline preload="auto" crossorigin="anonymous">
       <source src="https://srm-backend-qk-lwid.onrender.com/videos/animacion-ecosistema-digital.mp4" type="video/mp4">
     </video>
     <div class="scene-content"><h1>Más que una nueva imagen, un sistema diseñado para crecer.</h1>
@@ -189,7 +237,7 @@ body, html {
 
   <div class="scene" id="scene-6">
     <div class="scene-overlay"></div>
-    <video class="scene-video" autoplay muted playsinline preload="auto">
+    <video class="scene-video" autoplay muted playsinline preload="auto" crossorigin="anonymous">
       <source src="https://srm-backend-qk-lwid.onrender.com/videos/animacion-srm-qk-k.mp4" type="video/mp4">
     </video>
     <div class="scene-content"><h1>Hemos construido el 90% del camino. El 10% final lo diseñamos juntos.</h1>
@@ -221,73 +269,92 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'start_timeline', text: '¿Cuál es su cronograma ideal para iniciar este plan piloto?', answers: ['Inmediatamente', 'En el próximo mes', 'En el próximo trimestre', 'Aún por definir'] }
   ];
 
-  function transitionToScene(nextIndex) {
-    if (nextIndex >= scenes.length) return showForm();
-    const current = scenes[currentSceneIndex];
-    const next = scenes[nextIndex];
-    current.classList.remove('active');
-    next.classList.add('active');
-    const video = next.querySelector('video');
-    video.play().catch(()=>{});
-    video.onended = ()=> transitionToScene(nextIndex+1);
-    currentSceneIndex = nextIndex;
-    next.querySelector('.scene-content').classList.add('visible');
+  function showTextForScene(scene) {
+    const content = scene.querySelector('.scene-content');
+    if (content) setTimeout(() => content.classList.add('visible'), 1000);
   }
 
-  document.getElementById('presentation-container').addEventListener('click', ()=> {
-    if (currentSceneIndex < scenes.length-1) transitionToScene(currentSceneIndex+1);
-    else showForm();
+  function hideAllTexts() {
+    scenes.forEach(s => s.querySelector('.scene-content')?.classList.remove('visible'));
+  }
+
+  function transitionToScene(nextIndex) {
+    if (nextIndex >= scenes.length) return showForm();
+    const currentScene = scenes[currentSceneIndex];
+    const nextScene = scenes[nextIndex];
+    hideAllTexts();
+    currentScene.classList.remove('active');
+    nextScene.classList.add('active');
+    const video = nextScene.querySelector('video');
+    if (video) {
+      video.currentTime = 0;
+      video.play().catch(e => console.warn("Autoplay bloqueado:", e));
+      video.onended = () => transitionToScene(nextIndex + 1);
+    }
+    currentSceneIndex = nextIndex;
+    showTextForScene(nextScene);
+  }
+
+  function startPresentation() {
+    const firstScene = scenes[0];
+    const firstVideo = firstScene.querySelector('video');
+    firstVideo.play().catch(e => console.warn("Autoplay bloqueado:", e));
+    firstVideo.onended = () => transitionToScene(1);
+    showTextForScene(firstScene);
+  }
+
+  document.getElementById('presentation-container').addEventListener('click', () => {
+    if (currentSceneIndex === scenes.length - 1) showForm();
+    else transitionToScene(currentSceneIndex + 1);
   });
 
   function showForm() {
-    formContainer.style.display='flex';
+    formContainer.style.display = 'flex';
     renderQuestion();
   }
 
   function renderQuestion() {
-    questionsWrapper.innerHTML='';
+    questionsWrapper.innerHTML = '';
     if (currentQuestionIndex >= questions.length) return showThankYou();
     const q = questions[currentQuestionIndex];
-    const card=document.createElement('div');
-    card.className='question-card active';
-    card.innerHTML=`<h2>${q.text}</h2><div class="answers">
-      ${q.answers.map(a=>`<button class='answer-btn' data-key='${q.key}' data-value='${a}'>${a}</button>`).join('')}
-    </div>`;
+    const card = document.createElement('div');
+    card.className = 'question-card active';
+    card.innerHTML = `<h2>${q.text}</h2><div class='answers'>${q.answers.map(a=>`<button class='answer-btn' data-key='${q.key}' data-value='${a}'>${a}</button>`).join('')}</div>`;
     questionsWrapper.appendChild(card);
-    document.querySelectorAll('.answer-btn').forEach(btn=>btn.addEventListener('click', handleAnswer));
+    document.querySelectorAll('.answer-btn').forEach(b => b.addEventListener('click', handleAnswer));
   }
 
   async function handleAnswer(e) {
-    const key=e.target.dataset.key, value=e.target.dataset.value;
+    const key = e.target.dataset.key;
+    const value = e.target.dataset.value;
     try {
-      const res=await fetch("https://srm-backend-qk-lwid.onrender.com/api/responder", {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ sessionId, key, value })
+      const response = await fetch("https://srm-backend-qk-lwid.onrender.com/api/responder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, key, value })
       });
-      if (!res.ok) throw new Error();
-      currentQuestionIndex++;
-      updateProgress();
-      renderQuestion();
-    } catch {
+      if (!response.ok) throw new Error("Error al enviar datos");
+      e.target.classList.add('selected');
+      setTimeout(() => { currentQuestionIndex++; updateProgressBar(); renderQuestion(); }, 400);
+    } catch (err) {
+      console.error("❌ Error:", err);
       alert("No se pudo registrar la respuesta. Intenta nuevamente.");
     }
   }
 
-  function updateProgress(){
-    progressBar.style.width=`${(currentQuestionIndex/questions.length)*100}%`;
+  function updateProgressBar() {
+    progressBar.style.width = `${(currentQuestionIndex / questions.length) * 100}%`;
   }
 
-  function showThankYou(){
-    questionsWrapper.innerHTML=`<div class='question-card active' style='text-align:center;'>
+  function showThankYou() {
+    questionsWrapper.innerHTML = `<div class='question-card active' style='text-align:center;'>
       <h1>Gracias. Hemos recibido su diagnóstico.</h1>
-      <p>Recibirá su hoja de ruta detallada en las próximas 48 horas.</p></div>`;
-    progressBar.style.width='100%';
+      <p style='font-size:1.2rem;'>Nuestro equipo ya está personalizando su Plan Piloto. Recibirá su hoja de ruta en 48h.</p>
+    </div>`;
+    progressBar.style.width = "100%";
   }
 
-  const firstVideo = scenes[0].querySelector('video');
-  firstVideo.play().catch(()=>{});
-  firstVideo.onended=()=>transitionToScene(1);
-  scenes[0].querySelector('.scene-content').classList.add('visible');
+  startPresentation();
 });
 </script>
 </body>
