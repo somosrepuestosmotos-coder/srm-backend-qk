@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sin conexión | Suite Ejecutiva Digital</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0A2F7B;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    p { font-size: 1rem; max-width: 400px; line-height: 1.6; }
+    button {
+      margin-top: 2rem;
+      padding: 0.8rem 1.5rem;
+      background: #00B6C8;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sin conexión a Internet</h1>
+  <p>Parece que no tienes conexión. Podrás acceder nuevamente cuando estés en línea.</p>
+  <button onclick="window.location.reload()">Reintentar</button>
+</body>
+</html>
