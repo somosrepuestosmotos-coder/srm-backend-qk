@@ -48,27 +48,22 @@ const initDB = async () => {
   console.log("📦 Tabla 'respuestas' lista.");
 };
 
-// --- Endpoint para guardar respuestas ---
+/// ✅ Guardar respuesta en PostgreSQL con nombres de columnas correctos
 app.post("/api/responder", async (req, res) => {
+  const { sessionId, key, value } = req.body;
   try {
-    const { sessionId, key, value } = req.body;
-
-    if (!sessionId || !key || !value) {
-      return res.status(400).json({ error: "Faltan datos requeridos" });
-    }
-
-    await db.query(
-      "INSERT INTO respuestas (session_id, key, value) VALUES ($1, $2, $3)",
+    await pool.query(
+      "INSERT INTO respuestas (session_id, pregunta, respuesta, fecha) VALUES ($1, $2, $3, NOW())",
       [sessionId, key, value]
     );
-
     console.log(`✅ Guardado: ${key} → ${value}`);
     res.status(200).json({ success: true });
   } catch (error) {
     console.error("❌ Error al guardar respuesta:", error);
-    res.status(500).json({ error: "Error al guardar en la base de datos" });
+    res.status(500).json({ error: "Error al guardar respuesta" });
   }
 });
+
 
 // --- Endpoint para listar respuestas ---
 app.get("/api/respuestas", async (req, res) => {
