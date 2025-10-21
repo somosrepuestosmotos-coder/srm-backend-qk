@@ -1,43 +1,46 @@
 import express from "express";
 import cors from "cors";
-import pg from "pg"; // ⬅️ CAMBIO
+import pg from "pg";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
+// --- Configuración básica ---
 app.use(cors());
 app.use(express.json());
-app.use(express.static("."));
 
-// --- Inicialización de la base de datos (PostgreSQL) ---
-// Extrae el string de conexión de las variables de entorno (que pondremos en AWS)
+// ✅ Necesario para servir archivos locales (HTML, imágenes, videos, etc.)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Servir la carpeta raíz y la de videos
+app.use(express.static(__dirname));
+app.use("/videos", express.static(path.join(__dirname, "videos")));
+
+// --- Conexión a PostgreSQL ---
 const connectionString = process.env.DATABASE_URL;
 
-// Crea un "Pool" de conexiones. Es la forma moderna de conectarse.
 const db = new pg.Pool({
-  connectionString: connectionString,
-  // Configuración de SSL necesaria para conectarse a AWS RDS desde Beanstalk
-  ssl: {
-    rejectUnauthorized: false 
-  }
+  connectionString,
+  ssl: { rejectUnauthorized: false },
 });
 
 const initDB = async () => {
-  // Intenta conectarse
   try {
-    await db.query('SELECT NOW()'); // Prueba de conexión simple
+    await db.query("SELECT NOW()");
     console.log("📦 Conexión a PostgreSQL exitosa.");
   } catch (err) {
     console.error("❌ Error de conexión a PostgreSQL:", err);
   }
 
-  // Asegura que la tabla exista
   await db.query(`
     CREATE TABLE IF NOT EXISTS respuestas (
       id SERIAL PRIMARY KEY,
       session_id TEXT,
-      pregunta TEXT,
-      respuesta TEXT,
+      key TEXT,
+      value TEXT,
       fecha TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
   `);
@@ -45,7 +48,7 @@ const initDB = async () => {
   console.log("📦 Tabla 'respuestas' lista.");
 };
 
-// --- Endpoint para guardar respuestas (Sintaxis de PG) ---
+// --- Endpoint para guardar respuestas ---
 app.post("/api/responder", async (req, res) => {
   try {
     const { sessionId, key, value } = req.body;
@@ -54,9 +57,8 @@ app.post("/api/responder", async (req, res) => {
       return res.status(400).json({ error: "Faltan datos requeridos" });
     }
 
-    // ⬇️ CAMBIO: Usamos $1, $2, $3 como parámetros
     await db.query(
-      "INSERT INTO respuestas (session_id, pregunta, respuesta) VALUES ($1, $2, $3)",
+      "INSERT INTO respuestas (session_id, key, value) VALUES ($1, $2, $3)",
       [sessionId, key, value]
     );
 
@@ -68,10 +70,9 @@ app.post("/api/responder", async (req, res) => {
   }
 });
 
-// --- Endpoint para listar todas las respuestas (Sintaxis de PG) ---
+// --- Endpoint para listar respuestas ---
 app.get("/api/respuestas", async (req, res) => {
   try {
-    // ⬇️ CAMBIO: El resultado está en 'result.rows'
     const result = await db.query("SELECT * FROM respuestas ORDER BY fecha DESC");
     res.json(result.rows);
   } catch (error) {
