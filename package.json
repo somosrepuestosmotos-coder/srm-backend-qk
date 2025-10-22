@@ -1,21 +1,21 @@
 {
   "name": "srm-backend-qk",
   "version": "1.0.0",
-  "description": "Backend para la Suite Ejecutiva Digital - SRM",
+  "description": "Backend para la Suite Ejecutiva Digital SRM-QK — Somos Repuestos Motos",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"No test specified\" && exit 1"
+    "dev": "nodemon server.js"
   },
+  "author": "Juan David Jimenez Sierra",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "pg": "^8.11.5"
   },
-  "engines": {
-    "node": ">=18.x"
-  },
-  "author": "Equipo SRM",
-  "license": "ISC"
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
 }

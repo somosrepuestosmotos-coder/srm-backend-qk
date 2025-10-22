@@ -1,5 +1,5 @@
 // ==============================
-// ✅ SERVIDOR PRINCIPAL SRM-BACKEND-QK
+// ✅ SRM-QK Backend v1.0.1 — Producción Adaptativa
 // ==============================
 
 import express from "express";
@@ -17,6 +17,9 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 10000;
+const API_KEY = process.env.API_KEY || "srmqk2025secure";
+
+console.log("🚀 Iniciando backend SRM-QK v1.0.1...");
 
 // ------------------------------
 // 🔒 CORS — PERMITIR FRONTEND DE GITHUB PAGES
@@ -25,10 +28,11 @@ app.use(
   cors({
     origin: [
       "https://somosrepuestosmotos-coder.github.io",
-      "https://somosrepuestosmotos-coder.github.io/QK"
+      "https://somosrepuestosmotos-coder.github.io/QK",
+      "http://localhost:5500"
     ],
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type", "x-api-key"],
   })
 );
 
@@ -36,14 +40,15 @@ app.use(
 // ⚙️ MIDDLEWARES
 // ------------------------------
 app.use(express.json());
-app.use("/videos", express.static(path.join(__dirname, "videos"))); // servir videos locales
 
 // ------------------------------
-// 🗄️ CONEXIÓN A POSTGRESQL
+// 🗄️ CONEXIÓN A POSTGRESQL (ADAPTATIVA)
 // ------------------------------
+const isRenderDB = process.env.DATABASE_URL?.includes("render.com");
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl: isRenderDB ? { rejectUnauthorized: false } : false,
 });
 
 async function testConnection() {
@@ -51,7 +56,6 @@ async function testConnection() {
     const client = await pool.connect();
     console.log("📦 Conexión a PostgreSQL exitosa.");
 
-    // Crear tabla si no existe
     await client.query(`
       CREATE TABLE IF NOT EXISTS respuestas (
         id SERIAL PRIMARY KEY,
@@ -61,13 +65,24 @@ async function testConnection() {
         fecha TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log("📦 Lista de tablas 'respuestas'.");
+
+    console.log("🗃️ Tabla 'respuestas' lista.");
     client.release();
   } catch (err) {
     console.error("❌ Error al conectar con PostgreSQL:", err);
   }
 }
-testConnection();
+
+// ------------------------------
+// 🔒 PROTECCIÓN OPCIONAL POR API_KEY (solo dashboard)
+// ------------------------------
+app.use((req, res, next) => {
+  const key = req.query.key || req.headers["x-api-key"];
+  if (req.path.startsWith("/dashboard") && key !== API_KEY) {
+    return res.status(403).send("<h1>403 – Acceso denegado</h1>");
+  }
+  next();
+});
 
 // ------------------------------
 // 🧠 ENDPOINT: GUARDAR RESPUESTAS
@@ -75,7 +90,6 @@ testConnection();
 app.post("/api/responder", async (req, res) => {
   try {
     const { sessionId, key, value } = req.body;
-
     if (!sessionId || !key || !value) {
       return res.status(400).json({ success: false, error: "Datos incompletos" });
     }
@@ -94,22 +108,45 @@ app.post("/api/responder", async (req, res) => {
 });
 
 // ------------------------------
-// 🌐 RUTA RAÍZ DE PRUEBA
+// 📊 ENDPOINT: LEER RESPUESTAS
+// ------------------------------
+app.get("/api/respuestas", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM respuestas ORDER BY fecha DESC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("❌ Error al leer respuestas:", err);
+    res.status(500).json({ error: "Error al leer la base de datos" });
+  }
+});
+
+// ------------------------------
+// 📊 SERVIR DASHBOARD Y ESTÁTICOS
+// ------------------------------
+app.use("/", express.static(path.join(__dirname)));
+
+// ------------------------------
+// 🌐 RUTA DE PRUEBA
 // ------------------------------
 app.get("/", (req, res) => {
   res.send(`
-    <h1>🚀 SRM Backend QK activo</h1>
-    <p>Servidor en ejecución en el puerto ${PORT}</p>
-    <p><a href="/videos/animacion-logo-qk-original.mp4" target="_blank">Ver prueba de video</a></p>
+    <h1>🚀 SRM-QK Backend Activo</h1>
+    <p>Servidor ejecutándose en el puerto ${PORT}</p>
+    <ul>
+      <li><a href="/videos/animacion-logo-qk-original.mp4" target="_blank">🎥 Video de prueba</a></li>
+      <li><a href="/api/respuestas" target="_blank">📊 Ver respuestas (JSON)</a></li>
+      <li><a href="/dashboard.html?key=${API_KEY}" target="_blank">📈 Abrir dashboard</a></li>
+    </ul>
   `);
 });
 
 // ------------------------------
 // 🚀 INICIAR SERVIDOR
 // ------------------------------
-app.listen(PORT, () => {
-  console.log("🚀 Servidor en ejecución en el puerto", PORT);
-  console.log("✅ Tu servicio está activo 🎉");
-  console.log("🌐 Disponible en: https://srm-backend-qk-lwid.onrender.com");
-  console.log("///////////////////////////////////////////////////////////");
+testConnection().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor ejecutándose en el puerto ${PORT}`);
+    console.log(`🌐 URL: http://localhost:${PORT}`);
+    console.log("✅ Backend SRM-QK v1.0.1 listo para producción");
+  });
 });
