@@ -37,3 +37,4 @@ Diseñado para gerencia, marketing y dirección, el panel es **seguro, interacti
 
 ## 🗂️ Estructura de Archivos
 
+                               
