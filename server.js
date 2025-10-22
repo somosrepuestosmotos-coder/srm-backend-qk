@@ -1,100 +1,94 @@
-// ===============================
-// SRM-QK Backend Server v1.1.1
-// ===============================
+// server.js — Backend SRM-QK v1.0.2
+import express from "express";
+import cors from "cors";
+import pkg from "pg";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const express = require('express');
-const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = pkg;
+
+// =====================================================
+// 📍 Configuración básica
+// =====================================================
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// ===============================
-// 🔧 Middleware
-// ===============================
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// ===============================
-// 📁 Servir archivos estáticos
-// ===============================
+// =====================================================
+// 🗂️ Servir archivos estáticos desde /videos
+// =====================================================
+app.use("/videos", express.static(path.join(__dirname, "videos")));
 
-// ✅ Carpeta "videos" (para videos y miniaturas OpenGraph)
-app.use('/videos', express.static(path.join(__dirname, 'videos')));
-
-// ✅ Carpeta pública raíz (por si usas offline.html, icons, etc.)
-app.use(express.static(__dirname));
-
-// ===============================
-// 💾 Base de datos SQLite
-// ===============================
-const dbPath = path.join(__dirname, 'bd.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('❌ Error al conectar con la base de datos:', err.message);
-  } else {
-    console.log('✅ Conectado a la base de datos SQLite en', dbPath);
-  }
+// =====================================================
+// 💾 Conexión a PostgreSQL
+// =====================================================
+const pool = new Pool({
+  connectionString:
+    process.env.DATABASE_URL ||
+    "postgresql://srm_admin:SRM2025@dpg-cu7k2o6gbbvc73d03ivg-a.oregon-postgres.render.com/srm_db",
+  ssl: { rejectUnauthorized: false },
 });
 
-// Crear tabla si no existe
-db.run(`
-  CREATE TABLE IF NOT EXISTS respuestas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    sessionId TEXT,
-    pregunta TEXT,
-    respuesta TEXT,
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+pool
+  .connect()
+  .then(() => console.log("📦 Conexión a PostgreSQL exitosa."))
+  .catch((err) => console.error("❌ Error en conexión a PostgreSQL:", err));
 
-// ===============================
-// 🧠 API principal
-// ===============================
+// =====================================================
+// 🧠 Rutas del API
+// =====================================================
 
-// 📩 Guardar respuesta del cuestionario
-app.post('/api/responder', (req, res) => {
-  const { sessionId, key, value } = req.body;
-  if (!sessionId || !key || !value) {
-    return res.status(400).json({ error: 'Datos incompletos' });
-  }
+// Estado del servidor
+app.get("/", (req, res) => {
+  res.send("✅ Backend SRM-QK v1.0.2 en ejecución.");
+});
 
-  const sql = `INSERT INTO respuestas (sessionId, pregunta, respuesta) VALUES (?, ?, ?)`;
-  db.run(sql, [sessionId, key, value], (err) => {
-    if (err) {
-      console.error('❌ Error al guardar respuesta:', err.message);
-      return res.status(500).json({ error: 'Error al guardar respuesta' });
+// Guardar respuesta del cuestionario
+app.post("/api/responder", async (req, res) => {
+  try {
+    const { sessionId, key, value } = req.body;
+
+    if (!sessionId || !key || !value) {
+      return res.status(400).json({ error: "Faltan datos obligatorios" });
     }
+
+    const query = `
+      INSERT INTO respuestas (session_id, pregunta, respuesta, fecha)
+      VALUES ($1, $2, $3, NOW())
+    `;
+    await pool.query(query, [sessionId, key, value]);
 
     console.log(`✅ Guardado: ${key} → ${value}`);
-    res.json({ success: true });
-  });
+    res.status(201).json({ success: true, message: "Respuesta registrada" });
+  } catch (error) {
+    console.error("❌ Error al guardar respuesta:", error);
+    res.status(500).json({ success: false, error: "Error interno del servidor" });
+  }
 });
 
-// 📤 Obtener todas las respuestas (modo admin opcional)
-app.get('/api/respuestas', (req, res) => {
-  db.all('SELECT * FROM respuestas ORDER BY fecha DESC', [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al leer base de datos' });
-    }
-    res.json(rows);
-  });
+// Consultar todas las respuestas
+app.get("/api/respuestas", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM respuestas ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("❌ Error al obtener respuestas:", error);
+    res.status(500).json({ error: "Error al obtener respuestas" });
+  }
 });
 
-// ===============================
-// 🌐 Rutas de soporte
-// ===============================
-
-// Página offline (para PWA)
-app.get('/offline', (req, res) => {
-  res.sendFile(path.join(__dirname, 'offline.html'));
-});
-
-// ===============================
-// 🚀 Inicialización
-// ===============================
+// =====================================================
+// 🚀 Inicializar servidor
+// =====================================================
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor SRM-QK backend corriendo en puerto ${PORT}`);
-  console.log(`📁 Servidor de videos disponible en: http://localhost:${PORT}/videos/`);
+  console.log("🚀 Iniciando backend SRM-QK v1.0.2...");
+  console.log("📦 Conexión a PostgreSQL activa.");
+  console.log(`🌐 Servidor corriendo en puerto ${PORT}`);
+  console.log(`🗂️ Archivos estáticos desde: ${path.join(__dirname, "videos")}`);
+  console.log("✅ Backend SRM-QK listo para producción 🚀");
 });
