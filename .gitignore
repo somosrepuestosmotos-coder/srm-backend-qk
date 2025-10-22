@@ -4,4 +4,4 @@ node_modules/
 # Ignora las bases de datos locales (¡Contienen datos de prueba!)
 bd.sql
 bd.db
-db.db
+db.dbfrontend/ 
