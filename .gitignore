@@ -1,7 +1,5 @@
-# Ignora las dependencias locales
 node_modules/
-
-# Ignora las bases de datos locales (¡Contienen datos de prueba!)
+.env
 bd.sql
 bd.db
-db.dbfrontend/ 
+db.dbfrontend/
